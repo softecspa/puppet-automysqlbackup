@@ -1,0 +1,16 @@
+#!/bin/bash
+
+NAGIOS_SERVER='<%= scope.lookupvar('automysqlbackup::nagios') %>'
+MYSQL_SERVER='<%= scope.lookupvar('automysqlbackup::mysql_server') %>'
+NSCA='/usr/sbin/send_nsca'
+AUTOMYSQLBACKUP="<%= scope.lookupvar('automysqlbackup::params::executable') %>"
+HOSTNAME=`hostname`
+
+/usr/bin/logger -p daemon.info "automysqlbackup started at" `date +%d/%m/%Y` `date +%T`
+LANG="C" $AUTOMYSQLBACKUP > /dev/null
+if [ $? -eq 0 ]; then
+    echo -e "$HOSTNAME\tbackup_mysql_$MYSQL_SERVER\t0\tOK - Ultimo backup eseguito `date +%d/%m/%Y` `date +%T`" | $NSCA -H $NAGIOS_SERVER > /dev/null
+else
+    echo -e "$HOSTNAME\tbackup_mysql_$MYSQL_SERVER\t2\tCRITICAL - Errore nell'ultimo backup" | $NSCA -H $NAGIOS_SERVER > /dev/null
+fi
+/usr/bin/logger -p daemon.info "automysqlbackup finished at" `date +%d/%m/%Y` `date +%T`
