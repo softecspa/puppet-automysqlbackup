@@ -9,7 +9,7 @@ USERNAME="`grep user /root/.my.cnf | cut -d"=" -f2 | awk '{print $1}'`"
 
 # Username to access the MySQL server e.g. password
 #PASSWORD=`grep password /etc/mysql/debian.cnf | tail -n 1 | cut -d"=" -f2 | awk '{print $1}'`
-PASSWORD="`grep password /root/.my.cnf | cut -d"=" -f2 | awk '{print $1}'`"
+PASSWORD="`grep password /root/.my.cnf | cut -d"=" -f2 | awk '{print $1}' | sed -r \"s/^'//\" | sed -r \"s/'$//\"`"
 
 # Host name (or IP address) of MySQL server e.g localhost
 DBHOST=localhost
